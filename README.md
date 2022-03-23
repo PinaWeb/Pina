@@ -1,5 +1,5 @@
 # Another TypeScript Framework - Pina
-Pina or PinaWeb is Framework created in TypeScript. Pina allows programmer to create websites using PHTML (PinaHTML). \
+Pina or PinaWeb is Framework created in TypeScript. Pina allows programmer to create websites using PHTML (PinaHTML). 
 
 # Advantagements
 + Modules API (Creating components, events etc).
