@@ -1,0 +1,56 @@
++*+ 
+    await Pina.import("pina/components")
+    await Pina.import("pina/events")
+    await Pina.importScript("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js")
+*+*
+
+-/-
+    username = prompt("What's your name?");
+/-/
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <AutoTitle></AutoTitle>
+        <PinaStyles styleId="Chat"></PinaStyles>
+        <PinaLanguages></PinaLanguages>
+
+        <script>
+            function sendMessage() {
+                const value = document.querySelector("#input-message").value
+                Pina.serverWrite({
+                    eventName: "chat:message",
+                    data: {
+                        author: username,
+                        message: value
+                    }
+                })
+            }
+            
+            Pina.on("s_message", data => {
+                switch(data.eventName) {
+                    case 'server/chat:message': {
+                        document.querySelector("#conversation").innerHTML += `
+                            <h4>${data.data.author}</h4>
+                            <p>
+                                ${data.data.message}
+                            </p> <br>
+                        `
+                    } break;
+                }
+            })
+        </script>
+    </head>
+    <body>
+        <h1>Supersenger</h1>
+        <h2>Logged as: {{{ username }}}</h2>
+
+        <div id="conversation">
+
+        </div>
+
+        <input id="input-message"> <button onclick="sendMessage()">Send</button>
+    </body>
+</html>

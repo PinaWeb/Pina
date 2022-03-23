@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "outDir": "./pina_user_public/",
+      "noImplicitAny": true,
+      "module": "es2022",
+      "target": "es2022",
+      "jsx": "react",
+      "allowJs": true,
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true
+    }
+  }

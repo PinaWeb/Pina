@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    background: #eee;
+    padding: 25px;
+}
+
+h1 {
+    color: #151515;
+    text-shadow: 2px 2px #aaa;
+
+    span {
+        font-weight: 400;
+    }
+}
+
+input {
+    padding: 15px 35px;
+    font-size: 24px;
+    border: 0;
+    outline: 0;
+    background: #ddd;
+    color: #aaa;
+    box-shadow: 0 0 8px 2px #aaa;
+}

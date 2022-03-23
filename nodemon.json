@@ -1,0 +1,4 @@
+{
+    "verbose": true,
+    "ignore": ["src/main/pina_user_public/*", "src/main/mix-manifest.json"]
+  }

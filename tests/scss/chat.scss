@@ -1,0 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: monospace, sans-serif, Verdana, Tahoma;
+    box-sizing: border-box;
+}
+
+body {
+    background: #eee;
+    padding: 25px 50px;
+}
+
+#conversation {
+    height: 85vh;
+    overflow-y: auto;
+}
+

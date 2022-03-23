@@ -1,0 +1,86 @@
++*+ 
+    await Pina.import("pina/components")
+    await Pina.import("pina/events")
+    await Pina.import("xfacio/components_pack")
+    await Pina.importScript("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js")
+*+*
+
+-/-
+    const route = decodeURI(Pina.request.getRequestRoute());
+    const messages = [{
+        author: "User 1",
+        text: "Super text"
+    }, {
+        author: "User 2",
+        text: "xd"  
+    }]
+    let i = 0;
+
+    function greetUser(name) {
+        Pina.serverWrite(name)
+    }
+
+    Pina.on('s_message', (data) => console.log(data))
+/-/
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <AutoTitle></AutoTitle>
+        <PinaStyles styleId="Style1"></PinaStyles>
+        <PinaLanguages></PinaLanguages>
+    </head>
+    <body>
+        <h1>Your currently at: <span>{{{ route }}}</span></h1>
+        <br>
+
+        <input 
+            placeholder="Search... " 
+            value="{{{ route }}}" 
+            listen="keypress.enter" 
+            callback="(e) => Pina.redirect(e.target.value)"
+        > <br><br>
+
+         <input 
+            placeholder="What's your name " 
+            value="" 
+            listen="keypress.enter" 
+            callback="(e) => greetUser(e.target.value)"
+        >
+
+        <button 
+            listen=mouse.move
+            callback="() => console.log('test')"
+        >
+            <FitBox
+                listen="click.single"
+                callback="() => console.log('elle est disco')"
+            ></FitBox>
+            Hover me
+        </button>
+
+        <br>
+
+        <div>
+            <FitBox>
+
+            </FitBox>
+            e volla volla
+        </div>
+
+        <!--<CodeBlock lang="html" contenteditable>
+            &lt;h1 aria-label="xd"&gt; {{{ route.replace('/', '') }}} &lt;/h1&gt; #eol
+            &lt;h2 aria-label="69"&gt; Super H2 Text &lt;/h2&gt; #eol
+        </CodeBlock>
+
+         <PLoop while="i < 10" operation="i++">
+            Number: <PLoopData var="i"></PLoopData> <br>
+        </PLoop> 
+
+        {{{ messages.map(message => `<h1>${message.author}</h1><p>${message.text}</p>`) }}}
+
+        <xfacio-supercomponent1 /> -->
+    </body>
+</html>
