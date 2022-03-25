@@ -21,6 +21,10 @@
     }
 
     Pina.on('s_message', (data) => console.log(data))
+
+    Pina.state = {
+        asdf: 1
+    }
 /-/
 <!DOCTYPE html>
 <html lang="en">
@@ -69,6 +73,13 @@
             </FitBox>
             e volla volla
         </div>
+
+        <StateValue var="asdf"></StateValue>
+        <StateIf if="@asdf % 2 == 0">
+            hello
+        </StateIf>
+        <button listen="click.single" callback="(e) => Pina.setState({...Pina.state, asdf: Pina.state.asdf + 1})">+</button>
+        <button listen="click.single" callback="(e) => Pina.setState({...Pina.state, asdf: Pina.state.asdf - 1})">-</button>
 
         <!--<CodeBlock lang="html" contenteditable>
             &lt;h1 aria-label="xd"&gt; {{{ route.replace('/', '') }}} &lt;/h1&gt; #eol

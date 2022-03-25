@@ -128,6 +128,37 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
             this.createSockets()
         }
 
+        state = {
+
+        }
+
+        setState(newState) {
+            this.state = newState;
+            document.querySelectorAll("StateValue").forEach(stateValue => {
+                stateValue.innerHTML = Pina.state[stateValue.getAttribute("var")] || ""
+            })
+            
+            document.querySelectorAll("[pina-state-if]").forEach(element => {
+                let condition = element.getAttribute("condition")
+                const _args = condition.split(" ")
+                const _states = []
+
+                _args.forEach((arg) => {
+                    if(arg.startsWith('@')) _states.push(arg)
+                })
+                
+                _states.forEach((state) => {
+                    condition = condition.replace(state, Pina.state[state.replace('@', '')])
+                })
+
+                console.log(condition, eval(condition))
+
+                element.parentNode.innerHTML =  \`<div style="\${eval(condition) ? 'display: block;' : 'display: none;'}" pina-state-if var="\${condition.split(" ")}" condition="\${element.getAttribute("condition")}">
+                    \${element.innerHTML}
+                </div>\`
+            })
+        }
+
         async createSockets() {
             this.socket = io()
         }
@@ -219,7 +250,7 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
                 content = content.replace(match, eval(!dat.startsWith(\`*.+/g);\`) ? parseHTMLSpecialChars(dat) : '') )
             })
 
-            document.documentElement.innerHTML = content
+            document.body.innerHTML = content
 
             // Event Binding
             this.bindEvents()

@@ -1,12 +1,8 @@
-/**
-  * Exporting all essentials and utilities for PinaWeb
-  */
-
 export { App } from "./main/App"
 export { Page } from "./main/Page"
-export { Module, ModuleRenderer } from "./classess/Module.ts"
-export { Component  } from "./classess/Component.ts"
-export { compile } from "./compile/index"
-export { PinaModule } from "./config/index"
-export { PinaStyles } from "./config/index"
-export { PinaWebsiteConfig } from "./config/index"
+export { PinaModule } from "./config"
+export { PinaStyles } from "./config"
+export { PinaWebsiteConfig } from "./config"
+export { compile } from "./compiler/index"
+export { Component } from "./classess/Component"
+export { Module } from "./classess/Module"

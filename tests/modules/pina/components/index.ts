@@ -131,6 +131,27 @@ class Module extends PinaModule {
 
             /* @ts-ignore */
             return `<div fitbox-div class="pina-fitbox" style="position: absolute; top: -2px; left: -3px; background: transparent; height: ${br.height}px; width: ${br.width + 2}px; padding-top: 2px; padding-left: 3px;">${element.parentNode.innerHTML}</div>`
+        }),
+        new Component("StateValue", (element: any): string => {
+            console.log(eval(`Pina.state`))
+            return eval(`Pina.state["${element.getAttribute("var")}"] || ""`)
+        }),
+        new Component("StateIf", (element: any): string => {
+            let condition: string = element.getAttribute("if")
+            const _args: Array<string> = condition.split(" ")
+            const _states: Array<string> = []
+
+            _args.forEach((arg: string) => {
+                if(arg.startsWith('@')) _states.push(arg)
+            })
+            
+            _states.forEach((state: string) => {
+                condition = condition.replace(state, eval(`Pina.state['${state!.replace('@', '')}']`))
+            })
+
+            return `<div style="${eval(condition) ? 'display: block;' : 'display: none;'}" pina-state-if var="${condition.split(" ")}" condition="${element.getAttribute("if")}">
+                ${element.innerHTML}
+            </div>`
         })
     ]
 }
