@@ -163,7 +163,7 @@ export class App {
 
         const path = __dirname + '/pina_user_public/'
         await this.config?.modules?.forEach(async (module: any) => {
-            fs.copyFileSync(module.file, path + module.name.split('/').join('_') + '.ts')
+            //fs.copyFileSync(module.file, path + module.name.split('/').join('_') + '.ts')
             // const tsc_process = await exec(`tsc ${path + module.name.split('/').join('_') + '.ts'} `)
             // const tsc_process = await exec(`cd ${__dirname} && npx mix`) // !!!FINAL!!!
         })
