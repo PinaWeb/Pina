@@ -2,6 +2,7 @@ const jsdom = require("jsdom")
 const fs = require("fs")
 const minify = require('html-minifier').minify
 const prettier = require("prettier");
+const minifier = require('string-minify')
 
 const { JSDOM } = jsdom
 
@@ -51,13 +52,13 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
 
     scripts.forEach((script: any) => {
         if(!script) return
-        content = content.replace(script, parseScript(script))
+        content = content.replace(script, minify(parseScript(script), { collapseWhitespace: true, minifyJS: true }))
     })
 
     dataScripts!.forEach((script: any) => {
         if(!script) return
         content = content.replace(script, '')
-        dataScriptsParsed.push(parseDataScript(script))
+        dataScriptsParsed.push(minifier(minify(parseDataScript(script), { collapseWhitespace: true, minifyJS: true })))
     })
 
     let dom = new JSDOM(content).window.document
@@ -65,14 +66,17 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
     function createModuleInstances() {
         const _modules: Array<any> = []
         modules.forEach(module => {
-            const insta = (require(module.file).default)
-            const inst = new insta()
-
-            _modules.push({
-                instance: inst,
-                name: module.name,
-                onRender: inst?.onRender ? '(' + inst?.onRender + ')(Pina, window)' : '(() => {})(Pina, window)'
-            })
+            //try {
+                const insta = (require(module.file).default)
+                const inst = new insta()
+    
+                _modules.push({
+                    instance: inst,
+                    name: module.name,
+                    onRender: inst?.onRender ? '(' + inst?.onRender + ')(Pina, window)' : '(() => {})(Pina, window)'
+                })
+            //} catch(err) { err; }
+            
         })
 
         return _modules;
@@ -120,7 +124,7 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
             this.importedModules = []
             this.request = {
                 getRequestRoute() {
-                    return window.location.href.replace(window.location.origin, '')
+                    return window.location.href.replace(window.location.origin, '').split('#')[0]
                 }
             }
             this.importing = []
@@ -135,27 +139,8 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
         setState(newState) {
             this.state = newState;
             document.querySelectorAll("StateValue").forEach(stateValue => {
+                console.log(stateValue)
                 stateValue.innerHTML = Pina.state[stateValue.getAttribute("var")] || ""
-            })
-            
-            document.querySelectorAll("[pina-state-if]").forEach(element => {
-                let condition = element.getAttribute("condition")
-                const _args = condition.split(" ")
-                const _states = []
-
-                _args.forEach((arg) => {
-                    if(arg.startsWith('@')) _states.push(arg)
-                })
-                
-                _states.forEach((state) => {
-                    condition = condition.replace(state, Pina.state[state.replace('@', '')])
-                })
-
-                console.log(condition, eval(condition))
-
-                element.parentNode.innerHTML =  \`<div style="\${eval(condition) ? 'display: block;' : 'display: none;'}" pina-state-if var="\${condition.split(" ")}" condition="\${element.getAttribute("condition")}">
-                    \${element.innerHTML}
-                </div>\`
             })
         }
 
@@ -221,6 +206,20 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
         }
 
         async run() {
+
+            // Data binding
+
+            let content = document.documentElement.outerHTML
+            const matches = content.match(/\{\{\{*.+\}\}\}/g)
+            matches.forEach(match => {
+                if(match === '{{{*.+}}}') return;
+                const dat = replaceLastBraces("}}}", "", match.replace("{{{", "") );
+                content = content.replace(match, eval(!dat.startsWith(\`*.+/g);\`) ? parseHTMLSpecialChars(dat) : '') )
+            })
+
+            document.documentElement.innerHTML = content
+
+            // Components
             this.usedModules.forEach(module => {           
                 module.instance.components.forEach(component => {
                     component.renderer = (eval(component.renderer))
@@ -239,18 +238,6 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
                 }
                 
             })
-
-            // Data binding
-
-            let content = document.documentElement.outerHTML
-            const matches = content.match(/\{\{\{*.+\}\}\}/g)
-            matches.forEach(match => {
-                if(match === '{{{*.+}}}') return;
-                const dat = replaceLastBraces("}}}", "", match.replace("{{{", "") );
-                content = content.replace(match, eval(!dat.startsWith(\`*.+/g);\`) ? parseHTMLSpecialChars(dat) : '') )
-            })
-
-            document.body.innerHTML = content
 
             // Event Binding
             this.bindEvents()
@@ -277,7 +264,21 @@ export function compile(styles: Array<any>, modules: Array<any>, req: any, pageI
         dom.head.innerHTML += dsp
     })
 
+    dom.head.innerHTML += `<script src="https://kit.fontawesome.com/a163bbacef.js" crossorigin="anonymous"></script>`
+    dom.head.innerHTML = minifier(dom.head.innerHTML)
+
     content = dom.documentElement.outerHTML
 
-    return ((true ? "<!-- Website uses PinaWeb -->\n" : "") + (content)).replace(/  /g, '');
+    const _source: string = minify(((content)).replace(/  /g, ''), { 
+        minifyJS: true,
+        minifyCSS: true,
+        conservativeCollapse: true,
+        removeTagWhitespace: true,
+        removeComments: true
+    })
+
+    return ((true ? "<!-- Website uses PinaWeb -->\n" : "") + _source + `\n<!--
+    Pina website data:
+    Weight: ${(_source.length / 1024).toFixed(2)} KB
+-->`);
 }
